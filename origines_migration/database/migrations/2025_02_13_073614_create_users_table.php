@@ -3,39 +3,34 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
-return new class extends Migration
+class CreateUsersTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
-        // Create the 'users' table
         Schema::create('users', function (Blueprint $table) {
             $table->id('users_id');
-            $table->enum('role', ['admin', 'employee'])->notNull(); 
+            $table->enum('role', ['admin', 'employee']);
             $table->string('Firstname');
-            $table->string('Middlename');
+            $table->string('Middlename')->nullable();
             $table->string('Lastname');
-            $table->integer('contact_no'); 
+            $table->integer('contact_no');
             $table->string('Address');
-            $table->foreignId('log_id'); 
-            $table->foreignId('inventory_id'); 
-            // Add foreign key constraints
-            $table->foreign('log_id')->references('log_id')->on('activity_logs')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('inventory_id')->references('inventory_id')->on('inventory')->onDelete('cascade')->onUpdate('cascade');
-
-            $table->timestamps(); // Optional: created_at and updated_at columns
+            $table->unsignedBigInteger('inventory_id');
+            $table->unsignedBigInteger('log_id');
+            $table->timestamps();
         });
-    }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+        DB::table('users')->insert([
+            ['role' => 'admin', 'Firstname' => 'Julie Grace', 'Middlename' => 'M.', 'Lastname' => 'Origines', 'contact_no' => 123456789, 'Address' => 'Street 123', 'inventory_id' => 1, 'log_id' => 1],
+            ['role' => 'employee', 'Firstname' => 'Breanna Zaillah', 'Middlename' => 'B.', 'Lastname' => 'Magdugo', 'contact_no' => 987654321, 'Address' => 'Street 456', 'inventory_id' => 2, 'log_id' => 2],
+            ['role' => 'employee', 'Firstname' => 'Cristina Lean', 'Middlename' => 'C.', 'Lastname' => 'Iting', 'contact_no' => 555555555, 'Address' => 'Street 789', 'inventory_id' => 3, 'log_id' => 3],
+        ]);
+    }
+    
+    public function down()
     {
-        // Drop the 'users' table
         Schema::dropIfExists('users');
     }
-};
+}
